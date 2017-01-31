@@ -1,0 +1,21 @@
+{
+  "name": "daozhishi",
+  "version": "1.0.0",
+  "description": "Node applicative framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/SebQuenet/daozhishi"
+  },
+  "keywords": [
+    "applicative",
+    "framework",
+    "backend",
+    "framework"
+  ],
+  "author": "Seb Quenet",
+  "license": "MIT"
+}
