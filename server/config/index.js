@@ -12,6 +12,10 @@ const dzsConfig = class extends abstractDZSModule {
         const confFilePath = `${__dirname}/conf.yml`;
         //TODO : changer ca avec un objet chargé
         this._confData = {
+            'app': {
+                name: 'DaoZhiShi applicative framework',
+                port: 42042,
+            },
             'DZS-LOGGER': {
                 mode: 'verbose',
                 environment: 'develop',
