@@ -1,0 +1,6 @@
+dzs:
+    DZS-LOGGER:
+        mode: debug
+        environment: devel
+        ignoreObjIds:
+            DZS-01 : 1
