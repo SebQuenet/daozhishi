@@ -23,6 +23,9 @@ const dzsConfig = class extends abstractDZSModule {
                     'DZS-01' : 1,
                 },
             },
+            'DBH-PG': {
+                
+            }
         };
     }
 

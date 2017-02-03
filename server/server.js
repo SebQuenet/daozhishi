@@ -95,13 +95,14 @@ module.exports = function dzsInstance() {
     // Load all modules
 
     Promise.all([
-        _loadModulesTypes( 'server/dbh', (f) => f.endsWith('Dbh.js') && !f.startsWith('abstract'), 'dbhID'),
-        _loadModulesTypes( 'server/routes', (f) => f.endsWith('Route.js') && !f.startsWith('abstract'), 'routeID'),
-        _loadModulesTypes( 'server/stories', (f) => f.startsWith('DBZ-'), 'storyID'),
-        _loadModulesTypes( 'server/viewmodels', (f) => f.endsWith('VM.js') && !f.startsWith('abstract'), 'viewModelID'),
+        _loadModulesTypes('server/dbh', (f) => f.endsWith('Dbh.js') && !f.startsWith('abstract'), 'dbhID'),
+        _loadModulesTypes('server/routes', (f) => f.endsWith('Route.js') && !f.startsWith('abstract'), 'routeID'),
+        _loadModulesTypes('server/stories', (f) => f.startsWith('DZS-'), 'storyID'),
+        _loadModulesTypes('server/viewmodels', (f) => f.endsWith('VM.js') && !f.startsWith('abstract'), 'viewModelID'),
+        _loadModulesTypes('server/paramschecks', (f) => f.endsWith('Checker.js') && !f.startsWith('abstract'), 'checkerID'),
     ])
     .then(
-        ([dbh, routes, stories, viewModels]) => {
+        ([dbh, routes, stories, viewModels, paramschecks]) => {
             // TODO : Load into DI
             
 
