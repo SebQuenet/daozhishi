@@ -27,91 +27,97 @@ di.register('config');
 di.register('dzs-logger');
 
 
-function _loadModulesTypes(path, predicate, moduleKey) {
-    const logger = di.get('DZS-LOGGER');
+module.exports = class {
 
-    return fs.readdirAsync(path)
-    .then(
-        (files) => files
-            .filter(predicate)
-            .map((f) => {
-                try {
-                    const Mod = require(`${process.cwd()}/${path}/${f}`);
-                    return new Mod(di);
-                }
-                catch (err) {
-                    logger.error(`Error instanciating module ${path}${f} : ${err}`, { stack: err.stack });
-                }
-            })
-            .reduce((acc, item) => {
-                if (acc[item[moduleKey]] !== void 0) {
-                    logger.error(`Module ${moduleKey} already defined`);
-                    throw new Error(`Module ${moduleKey} already defined`);
-                }
-                acc[item[moduleKey]] = item;
-                return acc;
-            }, {})
-    )
-    .catch((err) => {
-        logger.error(`Error reading directory structure for type : ${moduleKey}`, { stack: err.stack });
-    });
-}
+    constructor() {
+    }
 
-module.exports = function dzsInstance() {
+    _loadModulesTypes(path, predicate, moduleKey) {
+        const logger = di.get('DZS-LOGGER');
 
-    const app = new Koa();
+        return fs.readdirAsync(path)
+        .then(
+            (files) => files
+                .filter(predicate)
+                .map((f) => {
+                    try {
+                        const Mod = require(`${process.cwd()}/${path}/${f}`);
+                        return new Mod(di);
+                    }
+                    catch (err) {
+                        logger.error(`Error instanciating module ${path}${f} : ${err}`, { stack: err.stack });
+                    }
+                })
+                .reduce((acc, item) => {
+                    if (acc[item[moduleKey]] !== void 0) {
+                        logger.error(`Module ${moduleKey} already defined`);
+                        throw new Error(`Module ${moduleKey} already defined`);
+                    }
+                    acc[item[moduleKey]] = item;
+                    return acc;
+                }, {})
+        )
+        .catch((err) => {
+            logger.error(`Error reading directory structure for type : ${moduleKey}`, { stack: err.stack });
+        });
+    }
 
-    // Define routes
-    const router = new KRouter({ prefix: '/dzs' });
+    listen() {
+        const app = new Koa();
 
-    const logger = di.get('DZS-LOGGER');
-    const conf = di.get('DZS-CONF');
+        // Define routes
+        const router = new KRouter({ prefix: '/dzs' });
 
-    const appConfig = conf.get('app');
-    app.name = appConfig.name;
+        const logger = di.get('DZS-LOGGER');
+        const conf = di.get('DZS-CONF');
 
-    logger.info(`Starting ${app.name} service`);
-    logger.verbose('Using koa-error');
-    app.use(kError());
-    logger.verbose('Using koa cross origin');
-    app.use(kCors());
-    logger.verbose('Using koa compress');
-    app.use(kCompress());
-    logger.verbose('Using koa body parser');
-    app.use(kBodyParser());
+        const appConfig = conf.get('app');
+        app.name = appConfig.name;
+
+        logger.info(`Starting ${app.name} service`);
+        logger.verbose('Using koa-error');
+        app.use(kError());
+        logger.verbose('Using koa cross origin');
+        app.use(kCors());
+        logger.verbose('Using koa compress');
+        app.use(kCompress());
+        logger.verbose('Using koa body parser');
+        app.use(kBodyParser());
 
 
-    // Create server and Socket.IO
-    const io = new KIo();
-    io.attach(app);
+        // Create server and Socket.IO
+        const io = new KIo();
+        io.attach(app);
 
-    io.use(co.wrap(function *(ctx, next) {
-        const start = new Date();
+        io.use(co.wrap(function *(ctx, next) {
+            const start = new Date();
             yield next();
             logger.info(`response time: ${ new Date() - start }ms`);
-    }));
+        }));
 
 
-    // Load all modules
+        // Load all modules
 
-    Promise.all([
-        _loadModulesTypes('server/dbh', (f) => f.endsWith('Dbh.js') && !f.startsWith('abstract'), 'dbhID'),
-        _loadModulesTypes('server/routes', (f) => f.endsWith('Route.js') && !f.startsWith('abstract'), 'routeID'),
-        _loadModulesTypes('server/stories', (f) => f.startsWith('DZS-'), 'storyID'),
-        _loadModulesTypes('server/viewmodels', (f) => f.endsWith('VM.js') && !f.startsWith('abstract'), 'viewModelID'),
-        _loadModulesTypes('server/paramschecks', (f) => f.endsWith('Checker.js') && !f.startsWith('abstract'), 'checkerID'),
-    ])
-    .then(
-        ([dbh, routes, stories, viewModels, paramschecks]) => {
-            // TODO : Load into DI
-            
+        Promise.all([
+                this._loadModulesTypes('server/dbh', (f) => f.endsWith('Dbh.js') && !f.startsWith('abstract'), 'dbhID'),
+                this._loadModulesTypes('server/routes', (f) => f.endsWith('Route.js') && !f.startsWith('abstract'), 'routeID'),
+                this._loadModulesTypes('server/stories', (f) => f.startsWith('DZS-'), 'storyID'),
+                this._loadModulesTypes('server/viewmodels', (f) => f.endsWith('VM.js') && !f.startsWith('abstract'), 'viewModelID'),
+                this._loadModulesTypes('server/paramschecks', (f) => f.endsWith('Checker.js') && !f.startsWith('abstract'), 'checkerID'),
+        ])
+            .then(
+                    ([dbh, routes, stories, viewModels, paramschecks]) => {
+                        // TODO : Load into DI
 
-            logger.verbose('Modules loaded into data injection system');
+                        const dataRoute = routes['ROUTE-DATA'];
+                        router.use(dataRoute.path, dataRoute.endPoint);
 
-            logger.info(`Listening on port ${appConfig.port}`);
-            app.listen(appConfig.port);
-    });
+                        logger.verbose('Modules loaded into data injection system');
 
+                        logger.info(`Listening on port ${appConfig.port}`);
+                        app.listen(appConfig.port);
+                    });
 
+    }
 };
 

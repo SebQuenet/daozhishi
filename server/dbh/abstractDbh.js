@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = class AbstractDbh{
+module.exports = class AbstractDbh {
     constructor(di, dbhID, dbhName) {
         this.di = di;
         this.dbhID = dbhID;
@@ -8,18 +8,18 @@ module.exports = class AbstractDbh{
         this.config = di.get('DZS-CONF').get(dbhID);
 
         const logger = di.get('DZS-LOGGER');
-        logger.debug(`Instanciating database handler`, {objID: dbhID, dbhName});
+        logger.debug('Instanciating database handler', { objID: dbhID, objName: dbhName });
     }
 
     getInstance(dbhID, dateStart) {
         if (this.constructor === AbstractDbh) {
-            throw'You must override getInstance method';
+            throw new Error('You must override getInstance method');
         }
     }
 
     test() {
         if (this.constructor === AbstractDbh) {
-            throw'No unit test implemented';
+            throw new Error('No unit test implemented');
         }
     }
 };
