@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server/index.js",
+    "dev": "node ./node_modules/nodemon/bin/nodemon.js --debug server 8042",
     "test": "mocha"
   },
   "repository": {
@@ -31,8 +32,12 @@
     "koa-error": "^2.1.0",
     "koa-router": "^7.1.0",
     "koa-socket": "^4.4.0",
+    "node-yaml-config": "0.0.4",
     "pg-promise": "^5.5.6",
     "promise-mysql": "^3.0.0",
     "promised-mongo": "^1.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }

@@ -89,7 +89,7 @@ module.exports = class {
         const io = new KIo();
         io.attach(app);
 
-        io.use(co.wrap(function *(ctx, next) {
+        io.use(co.wrap(function *wrapper(ctx, next) {
             const start = new Date();
             yield next();
             logger.info(`response time: ${ new Date() - start }ms`);

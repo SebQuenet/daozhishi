@@ -23,6 +23,7 @@ module.exports = class dataRoute extends AbstractRoute {
         router.post('/', this.post);
         router.put('/', this.put);
         router.delete('/', this.delete);
+
         return router.routes();
     }
 
