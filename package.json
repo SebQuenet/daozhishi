@@ -4,6 +4,7 @@
   "description": "Node applicative framework",
   "main": "index.js",
   "scripts": {
+    "start": "node server/index.js",
     "test": "mocha"
   },
   "repository": {
