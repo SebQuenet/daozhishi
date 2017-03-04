@@ -1,3 +1,4 @@
-const server = require('./server.js');
+const DzhServer = require('./server.js');
 
-server();
+const srv = new DzhServer();
+srv.listen();
