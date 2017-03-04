@@ -14,7 +14,7 @@ module.exports = class dataRoute extends AbstractRoute {
     }
 
     get path() {
-        return super.get();
+        return this.routePath;
     }
 
     endPoint() {
